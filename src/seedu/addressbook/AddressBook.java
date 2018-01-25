@@ -1,5 +1,6 @@
 package seedu.addressbook;
 
+//Testing commit
 /*
  * NOTE : =============================================================
  * This class is written in a procedural fashion (i.e. not Object-Oriented)
