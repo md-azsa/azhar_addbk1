@@ -1064,7 +1064,7 @@ public class AddressBook {
         return isPersonNameValid(person[PERSON_DATA_INDEX_NAME])
                 && isPersonPhoneValid(person[PERSON_DATA_INDEX_PHONE])
                 && isPersonEmailValid(person[PERSON_DATA_INDEX_EMAIL])
-                && isPersonDOBValid(); //make it forced true first
+                && isPersonDOBValid(person[PERSON_DATA_INDEX_DOB]); //make it forced true first
     }
 
     /*
@@ -1107,7 +1107,17 @@ public class AddressBook {
     }
 
     //Add method of DOB
-    private static boolean isPersonDOBValid(){
+    private static boolean isPersonDOBValid(String dob){
+        String[] toVerifyValidDOB = removePeriodFromDateOfBirth(dob);
+
+        return dob.matches("\\S+\\.\\S+\\.\\S+") && verifyValidDOB(toVerifyValidDOB); // dob is [non-whitespace].[non-whitespace].[non-whitespace]
+    }
+
+    //Add method of DOB to see if valid DOB
+    private static boolean verifyValidDOB(String[] s) {
+        if (Integer.parseInt(s[0]) > 31 || Integer.parseInt(s[1]) > 12) { //s[0] refers to day, //s[1] refers to month
+            return false;
+        }
         return true;
     }
 
@@ -1202,4 +1212,9 @@ public class AddressBook {
         return new ArrayList<>(Arrays.asList(toSplit.trim().split("\\s+")));
     }
 
+    //Utility method for extracting date of birth
+    private static String[] removePeriodFromDateOfBirth(String s) {
+        String[] numbersFromDOB = s.split("\\.");
+        return numbersFromDOB;
+    }
 }
