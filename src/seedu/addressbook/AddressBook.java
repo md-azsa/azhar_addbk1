@@ -16,14 +16,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.DateTimeException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.time.LocalDate;
 
 /*
@@ -152,7 +145,6 @@ public class AddressBook {
     private static final int PERSON_DATA_INDEX_NAME = 0;
     private static final int PERSON_DATA_INDEX_PHONE = 1;
     private static final int PERSON_DATA_INDEX_EMAIL = 2;
-    //Edited with dob index
     private static final int PERSON_DATA_INDEX_DOB = 3;
 
     /**
@@ -188,6 +180,7 @@ public class AddressBook {
      * ====================================================================================================
      */
 
+    private enum PersonProperty {NAME, PHONE, EMAIL, DOB}
     /**
      * List of all persons in the address book.
      */
