@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
+import java.time.LocalDate;
 
 /*
  * NOTE : =============================================================
@@ -376,6 +378,7 @@ public class AddressBook {
         final String[] commandTypeAndParams = splitCommandWordAndArgs(userInputString);
         final String commandType = commandTypeAndParams[0];
         final String commandArgs = commandTypeAndParams[1];
+
         switch (commandType) {
         case COMMAND_ADD_WORD:
             return executeAddPerson(commandArgs);
@@ -868,6 +871,11 @@ public class AddressBook {
         return person[PERSON_DATA_INDEX_EMAIL];
     }
 
+    /**
+     *  Returns given person's date of birth
+     * @param person whose date of birth you want
+     */
+
     private static String getDOBFromPerson(String[] person) {
         return person[PERSON_DATA_INDEX_DOB];
     }
@@ -878,6 +886,7 @@ public class AddressBook {
      * @param name of person
      * @param phone without data prefix
      * @param email without data prefix
+     * @param dob without data prefix
      * @return constructed person
      */
     private static String[] makePersonFromData(String name, String phone, String email, String dob) {
@@ -964,7 +973,7 @@ public class AddressBook {
 
     /**
      * Returns true if person data (email, name, phone etc) can be extracted from the argument string.
-     * Format is [name] p/[phone] e/[email], phone and email positions can be swapped.
+     * Format is [name] p/[phone] e/[email] d/[dob] phone and email positions cannot be swapped.
      *
      * @param personData person string representation
      */
@@ -973,8 +982,8 @@ public class AddressBook {
     private static boolean isPersonDataExtractableFrom(String personData) {
         final String matchAnyPersonDataPrefix = PERSON_DATA_PREFIX_PHONE + '|' + PERSON_DATA_PREFIX_EMAIL + '|' + PERSON_DATA_PREFIX_DOB;
         final String[] splitArgs = personData.trim().split(matchAnyPersonDataPrefix);
-        return splitArgs.length == 4 // 4 arguments, additional length for dob
-                && !splitArgs[0].isEmpty() // non-empty arguments
+        return splitArgs.length == 4
+                && !splitArgs[0].isEmpty()
                 && !splitArgs[1].isEmpty()
                 && !splitArgs[2].isEmpty()
                 && !splitArgs[3].isEmpty();
@@ -1008,18 +1017,6 @@ public class AddressBook {
 
         // Phone must be the second argument
         return removePrefixSign(encoded.substring(indexOfPhonePrefix, indexOfEmailPrefix).trim(), PERSON_DATA_PREFIX_PHONE);
-
-        // phone is last arg, target is from prefix to end of string
-//        if (indexOfPhonePrefix > indexOfEmailPrefix) {
-//            return removePrefixSign(encoded.substring(indexOfPhonePrefix, encoded.length()).trim(),
-//                    PERSON_DATA_PREFIX_PHONE);
-//
-//        // phone is middle arg, target is from own prefix to next prefix
-//        } else {
-//            return removePrefixSign(
-//                    encoded.substring(indexOfPhonePrefix, indexOfEmailPrefix).trim(),
-//                    PERSON_DATA_PREFIX_PHONE);
-//        }
     }
 
     /**
@@ -1029,26 +1026,18 @@ public class AddressBook {
      * @return email argument WITHOUT prefix
      */
     private static String extractEmailFromPersonString(String encoded) {
-        //final int indexOfPhonePrefix = encoded.indexOf(PERSON_DATA_PREFIX_PHONE);
+
         final int indexOfEmailPrefix = encoded.indexOf(PERSON_DATA_PREFIX_EMAIL);
         final int indexOfDOBPrefix = encoded.indexOf(PERSON_DATA_PREFIX_DOB);
-        // email must be the third argument
-        return removePrefixSign(encoded.substring(indexOfEmailPrefix, indexOfDOBPrefix).trim(), PERSON_DATA_PREFIX_EMAIL);
 
-        // email is last arg, target is from prefix to end of string
-//        if (indexOfEmailPrefix > indexOfPhonePrefix) {
-//            return removePrefixSign(encoded.substring(indexOfEmailPrefix, encoded.length()).trim(),
-//                    PERSON_DATA_PREFIX_EMAIL);
-//
-//        // email is middle arg, target is from own prefix to next prefix
-//        } else {
-//            return removePrefixSign(
-//                    encoded.substring(indexOfEmailPrefix, indexOfPhonePrefix).trim(),
-//                    PERSON_DATA_PREFIX_EMAIL);
-//        }
+        return removePrefixSign(encoded.substring(indexOfEmailPrefix, indexOfDOBPrefix).trim(), PERSON_DATA_PREFIX_EMAIL);
     }
 
-    // Extraction of date of birth
+    /**
+     *  Extracts substring representing dob from person string representation
+     * @param encoded person string representation
+     * @return dob argument WITHOUT prefix
+     */
     private static String extractDOBFromPersonString(String encoded) {
         final int indexOfDOBPrefix = encoded.indexOf(PERSON_DATA_PREFIX_DOB);
         return removePrefixSign(encoded.substring(indexOfDOBPrefix, encoded.length()).trim(),
@@ -1106,19 +1095,33 @@ public class AddressBook {
         //TODO: implement a more permissive validation
     }
 
-    //Add method of DOB
+    /**
+     * Returns true if the given string is a legal date of birth
+     * @param dob to be validated
+     * @return whether arg is a valid date of birth
+     */
     private static boolean isPersonDOBValid(String dob){
-        String[] toVerifyValidDOB = removePeriodFromDateOfBirth(dob);
 
-        return dob.matches("\\S+\\.\\S+\\.\\S+") && verifyValidDOB(toVerifyValidDOB); // dob is [non-whitespace].[non-whitespace].[non-whitespace]
+        return dob.matches("\\S+\\.\\S+\\.\\S+") && verifyValidDOB(dob); // dob is [non-whitespace].[non-whitespace].[non-whitespace]
     }
 
-    //Add method of DOB to see if valid DOB
-    private static boolean verifyValidDOB(String[] s) {
-        if (Integer.parseInt(s[0]) > 31 || Integer.parseInt(s[1]) > 12) { //s[0] refers to day, //s[1] refers to month
+    /**
+     * Check if the date of birth is valid.
+     * Days shouldn't exceed 31 and month shouldn't exceed 12
+     * @param s to be validated
+     * @return whether arg is a valid date
+     */
+    private static boolean verifyValidDOB(String s) {
+        String[] dateProperties  = s.split("\\.");
+        int day = dateProperties.length > 2 ? Integer.parseInt(dateProperties[0]) : 1;
+        int month = dateProperties.length > 1 ? Integer.parseInt(dateProperties[1]) : 1;
+        int year = Integer.parseInt(dateProperties[2]);
+        try{
+            LocalDate.of(year, month, day);
+            return true;
+        }catch(DateTimeException dte){
             return false;
         }
-        return true;
     }
 
 
@@ -1210,11 +1213,5 @@ public class AddressBook {
      */
     private static ArrayList<String> splitByWhitespace(String toSplit) {
         return new ArrayList<>(Arrays.asList(toSplit.trim().split("\\s+")));
-    }
-
-    //Utility method for extracting date of birth
-    private static String[] removePeriodFromDateOfBirth(String s) {
-        String[] numbersFromDOB = s.split("\\.");
-        return numbersFromDOB;
     }
 }
