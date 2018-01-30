@@ -1008,11 +1008,13 @@ public class AddressBook {
      * @return phone number argument WITHOUT prefix
      */
     private static String extractPhoneFromPersonString(String encoded) {
-        final int indexOfPhonePrefix = encoded.indexOf(PERSON_DATA_PREFIX_PHONE);
-        final int indexOfEmailPrefix = encoded.indexOf(PERSON_DATA_PREFIX_EMAIL);
-
-        // Phone must be the second argument
-        return removePrefixSign(encoded.substring(indexOfPhonePrefix, indexOfEmailPrefix).trim(), PERSON_DATA_PREFIX_PHONE);
+        ArrayList<String> parsedEncodedString = splitByWhitespace(encoded);
+        for (String prefixes : parsedEncodedString) {
+            if (prefixes.contains(PERSON_DATA_PREFIX_PHONE)) {
+                return removePrefixSign(prefixes.trim(), PERSON_DATA_PREFIX_PHONE);
+            }
+        }
+        return "";
     }
 
     /**
@@ -1023,10 +1025,13 @@ public class AddressBook {
      */
     private static String extractEmailFromPersonString(String encoded) {
 
-        final int indexOfEmailPrefix = encoded.indexOf(PERSON_DATA_PREFIX_EMAIL);
-        final int indexOfDOBPrefix = encoded.indexOf(PERSON_DATA_PREFIX_DOB);
-
-        return removePrefixSign(encoded.substring(indexOfEmailPrefix, indexOfDOBPrefix).trim(), PERSON_DATA_PREFIX_EMAIL);
+        ArrayList<String> parsedEncodedString = splitByWhitespace(encoded);
+        for (String prefixes : parsedEncodedString) {
+            if (prefixes.contains(PERSON_DATA_PREFIX_EMAIL)) {
+                return removePrefixSign(prefixes.trim(), PERSON_DATA_PREFIX_EMAIL);
+            }
+        }
+        return "";
     }
 
     /**
@@ -1035,9 +1040,13 @@ public class AddressBook {
      * @return dob argument WITHOUT prefix
      */
     private static String extractDOBFromPersonString(String encoded) {
-        final int indexOfDOBPrefix = encoded.indexOf(PERSON_DATA_PREFIX_DOB);
-        return removePrefixSign(encoded.substring(indexOfDOBPrefix, encoded.length()).trim(),
-                PERSON_DATA_PREFIX_DOB);
+        ArrayList<String> parsedEncodedString = splitByWhitespace(encoded);
+        for (String prefixes : parsedEncodedString) {
+            if (prefixes.contains(PERSON_DATA_PREFIX_DOB)) {
+                return removePrefixSign(prefixes.trim(), PERSON_DATA_PREFIX_DOB);
+            }
+        }
+        return "";
     }
 
     /**
