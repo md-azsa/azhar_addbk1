@@ -137,21 +137,6 @@ public class AddressBook {
     private static final String DIVIDER = "===================================================";
 
 
-    /* We use a String array to store details of a single person.
-     * The constants given below are the indexes for the different data elements of a person
-     * used by the internal String[] storage format.
-     * For example, a person's name is stored as the 0th element in the array.
-     */
-    private static final int PERSON_DATA_INDEX_NAME = 0;
-    private static final int PERSON_DATA_INDEX_PHONE = 1;
-    private static final int PERSON_DATA_INDEX_EMAIL = 2;
-    private static final int PERSON_DATA_INDEX_DOB = 3;
-
-    /**
-     * The number of data elements for a single person.
-     */
-    private static final int PERSON_DATA_COUNT = 4; //Changed to 4 to add in Date of Birth
-
     /**
      * Offset required to convert between 1-indexing and 0-indexing.COMMAND_
      */
@@ -379,7 +364,7 @@ public class AddressBook {
         case COMMAND_ADD_WORD:
             return executeAddPerson(commandArgs);
         case COMMAND_FIND_WORD:
-            return executeFindPersons(commandArgs);
+            return executeFindPersons(commandArgs.toLowerCase());
         case COMMAND_LIST_WORD:
             return executeListAllPersonsInAddressBook();
         case COMMAND_DELETE_WORD:
@@ -492,7 +477,7 @@ public class AddressBook {
     private static ArrayList<HashMap<PersonProperty, String>> getPersonsWithNameContainingAnyKeyword(Collection<String> keywords) {
         final ArrayList<HashMap<PersonProperty, String>> matchedPersons = new ArrayList<>();
         for (HashMap<PersonProperty, String> person : getAllPersonsInAddressBook()) {
-            final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
+            final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person).toLowerCase()));
             if (!Collections.disjoint(wordsInName, keywords)) {
                 matchedPersons.add(person);
             }
