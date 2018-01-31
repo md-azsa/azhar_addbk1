@@ -27,16 +27,24 @@
   add Valid Name p/not_numbers e/valid@e.mail
   add Valid Name p/12345 e/notAnEmail
 
+  # should catch invalid date of birth
+  add Valid Name p/12345 e/Valid@email.com dob/32.12.1994
+  add Valid Name p/12345 e/Valid@email.com dob/12.13.1994
+  add Valid Name dob/123.112.1994 p/12345 e/Valid.email.com
+
   # should add correctly
-  add Adam Brown p/111111 e/adam@gmail.com
+  add Adam Brown p/111111 e/adam@gmail.com dob/1.1.1994
+  add Charlie Bake p/12234 e/charlie@gmail.com dob/1.12.1994
+  add Danny Koo dob/12.12.1994 p/999 e/charlie@email.com
   list
   add Betsy Choo p/222222 e/benchoo@nus.edu.sg
   list
+  list
 
   # order of phone and email should not matter
-  add Charlie Dickson e/charlie.d@nus.edu.sg p/333333
+  add Charlie Dickson dob/1.2.1993 e/charlie.d@nus.edu.sg p/333333
   list
-  add Dickson Ee e/dickson@nus.edu.sg p/444444
+  add Dickson Ee e/dickson@nus.edu.sg dob/1.2.1994 p/444444 
   list
   add Esther Potato p/555555 e/esther@notreal.potato
   list
