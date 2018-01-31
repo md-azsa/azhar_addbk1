@@ -18,6 +18,7 @@ import java.nio.file.Paths;
 import java.time.DateTimeException;
 import java.util.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 /*
  * NOTE : =============================================================
@@ -91,13 +92,15 @@ public class AddressBook {
     // These are the prefix strings to define the data type of a command parameter
     private static final String PERSON_DATA_PREFIX_PHONE = "p/";
     private static final String PERSON_DATA_PREFIX_EMAIL = "e/";
-    // Edited with dob prefix
     private static final String PERSON_DATA_PREFIX_DOB = "dob/";
+    private static final String PERSON_DATA_PREFIX_TIMESTAMP = "time added:";
 
     private static final String PERSON_STRING_REPRESENTATION = "%1$s " // name
                                                             + PERSON_DATA_PREFIX_PHONE + "%2$s " // phone
                                                             + PERSON_DATA_PREFIX_EMAIL + "%3$s " // email
-                                                            + PERSON_DATA_PREFIX_DOB + "%4$s"; //dob
+                                                            + PERSON_DATA_PREFIX_DOB + "%4$s "
+                                                            + PERSON_DATA_PREFIX_TIMESTAMP + "%5$s "
+                                                            + "%6$s"; //dob
     private static final String COMMAND_ADD_WORD = "add";
     private static final String COMMAND_ADD_DESC = "Adds a person to the address book.";
     private static final String COMMAND_ADD_PARAMETERS = "NAME "
@@ -168,7 +171,7 @@ public class AddressBook {
     /**
      * PersonProperty enum class to store the details of the person
      */
-    private enum PersonProperty {NAME, PHONE, EMAIL, DOB}
+    private enum PersonProperty {NAME, PHONE, EMAIL, DOB, DATESTAMP, TIMESTAMP}
     /**
      * List of all persons in the address book.
      */
@@ -431,7 +434,8 @@ public class AddressBook {
      */
     private static String getMessageForSuccessfulAddPerson(HashMap<PersonProperty, String> addedPerson) {
         return String.format(MESSAGE_ADDED,
-                getNameFromPerson(addedPerson), getPhoneFromPerson(addedPerson), getEmailFromPerson(addedPerson), getDOBFromPerson(addedPerson));
+                getNameFromPerson(addedPerson), getPhoneFromPerson(addedPerson), getEmailFromPerson(addedPerson), getDOBFromPerson(addedPerson),
+                getDateStampFromPerson(addedPerson), getTimeStampFromPerson(addedPerson));
     }
 
     /**
@@ -549,6 +553,7 @@ public class AddressBook {
     private static String getMessageForSuccessfulDelete(HashMap<PersonProperty, String> deletedPerson) {
         return String.format(MESSAGE_DELETE_PERSON_SUCCESS, getMessageForFormattedPersonData(deletedPerson));
     }
+
 
     /**
      * Clears all persons in the address book.
@@ -861,6 +866,13 @@ public class AddressBook {
         return person.get(PersonProperty.DOB);
     }
 
+    private static String getDateStampFromPerson(HashMap<PersonProperty, String> person) {
+        return person.get(PersonProperty.DATESTAMP);
+    }
+
+    private static String getTimeStampFromPerson(HashMap<PersonProperty, String> person) {
+        return person.get(PersonProperty.TIMESTAMP);
+    }
     /**
      * Creates a person from the given data.
      *
@@ -870,12 +882,15 @@ public class AddressBook {
      * @param dob without data prefix
      * @return constructed person
      */
-    private static HashMap<PersonProperty, String> makePersonFromData(String name, String phone, String email, String dob) {
+    private static HashMap<PersonProperty, String> makePersonFromData(String name, String phone, String email, String dob,
+                                                                      String localDate, String localTime) {
         final HashMap<PersonProperty, String> person = new HashMap<>();
         person.put(PersonProperty.NAME, name);
         person.put(PersonProperty.PHONE, phone);
         person.put(PersonProperty.EMAIL, email);
         person.put(PersonProperty.DOB, dob);
+        person.put(PersonProperty.DATESTAMP, localDate);
+        person.put(PersonProperty.TIMESTAMP, localTime);
         return person;
     }
 
@@ -887,7 +902,8 @@ public class AddressBook {
      */
     private static String encodePersonToString(HashMap<PersonProperty, String> person) {
         return String.format(PERSON_STRING_REPRESENTATION,
-                getNameFromPerson(person), getPhoneFromPerson(person), getEmailFromPerson(person), getDOBFromPerson(person));
+                getNameFromPerson(person), getPhoneFromPerson(person), getEmailFromPerson(person), getDOBFromPerson(person),
+                getDateStampFromPerson(person), getTimeStampFromPerson(person));
     }
 
     /**
@@ -927,7 +943,9 @@ public class AddressBook {
                 extractNameFromPersonString(encoded),
                 extractPhoneFromPersonString(encoded),
                 extractEmailFromPersonString(encoded),
-                extractDOBFromPersonString(encoded)
+                extractDOBFromPersonString(encoded),
+                localDateStampAsString(),
+                localTimeStampAsString()
         );
         // check that the constructed person is valid
         return isPersonDataValid(decodedPerson) ? Optional.of(decodedPerson) : Optional.empty();
@@ -1032,6 +1050,19 @@ public class AddressBook {
             }
         }
         return "";
+    }
+
+    /**
+     * Gives the local time stamp when added
+     */
+    private static String localDateStampAsString() {
+        LocalDate currentDate = LocalDate.now();
+        return currentDate.toString();
+    }
+
+    private static String localTimeStampAsString() {
+        LocalTime currentTime = LocalTime.now();
+        return currentTime.toString();
     }
 
     /**
