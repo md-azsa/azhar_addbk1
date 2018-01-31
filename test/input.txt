@@ -21,11 +21,12 @@
   add wrong args wrong args
   add Valid Name p/12345 valid@email.butNoPrefix
   add Valid Name 12345 e/valid@email.butPhonePrefixMissing
+  add 1234954913
   
   # should catch invalid person data
-  add []\[;] p/12345 e/valid@e.mail
-  add Valid Name p/not_numbers e/valid@e.mail
-  add Valid Name p/12345 e/notAnEmail
+  add []\[;] p/12345 e/valid@e.mail dob/dfs.df3.12
+  add Valid Name p/not_numbers e/valid@e.mail dob/d.1.2222
+  add Valid Name p/12345 e/notAnEmail dob/kl.[].wsd
 
   # should catch invalid date of birth
   add Valid Name p/12345 e/Valid@email.com dob/32.12.1994
@@ -41,7 +42,7 @@
   list
   list
 
-  # order of phone and email should not matter
+  # order of phone and email and dob should not matter
   add Charlie Dickson dob/1.2.1993 e/charlie.d@nus.edu.sg p/333333
   list
   add Dickson Ee e/dickson@nus.edu.sg dob/1.2.1994 p/444444 
