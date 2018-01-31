@@ -866,10 +866,18 @@ public class AddressBook {
         return person.get(PersonProperty.DOB);
     }
 
+    /**
+     *  Returns the date entry added
+     * @param person whose date entry you want
+     */
     private static String getDateStampFromPerson(HashMap<PersonProperty, String> person) {
         return person.get(PersonProperty.DATESTAMP);
     }
 
+    /**
+     *  Returns the time entry added
+     * @param person whose time entry you want
+     */
     private static String getTimeStampFromPerson(HashMap<PersonProperty, String> person) {
         return person.get(PersonProperty.TIMESTAMP);
     }
@@ -1053,13 +1061,20 @@ public class AddressBook {
     }
 
     /**
-     * Gives the local time stamp when added
+     * Gives the local date stamp when added
+     *
+     * @return the current local date as string
      */
     private static String localDateStampAsString() {
         LocalDate currentDate = LocalDate.now();
         return currentDate.toString();
     }
 
+    /**
+     * Converts the current time stamp into a string
+     *
+     * @return the current local time as string
+     */
     private static String localTimeStampAsString() {
         LocalTime currentTime = LocalTime.now();
         return currentTime.toString();
