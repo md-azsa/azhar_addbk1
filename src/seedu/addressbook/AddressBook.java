@@ -1185,16 +1185,14 @@ public class AddressBook {
             day = dateProperties.length > 2 ? Integer.parseInt(dateProperties[0]) : 1;
             month = dateProperties.length > 1 ? Integer.parseInt(dateProperties[1]) : 1;
             year = Integer.parseInt(dateProperties[2]);
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-
-        try {
             LocalDate.of(year, month, day);
             return true;
+        } catch (NumberFormatException nfe) {
+            return false;
         } catch (DateTimeException dte) {
             return false;
         }
+
     }
 
 
