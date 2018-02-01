@@ -1180,13 +1180,19 @@ public class AddressBook {
      */
     private static boolean verifyValidDOB(String s) {
         String[] dateProperties  = s.split("\\.");
-        int day = dateProperties.length > 2 ? Integer.parseInt(dateProperties[0]) : 1;
-        int month = dateProperties.length > 1 ? Integer.parseInt(dateProperties[1]) : 1;
-        int year = Integer.parseInt(dateProperties[2]);
-        try{
+        int day, month, year;
+        try {
+            day = dateProperties.length > 2 ? Integer.parseInt(dateProperties[0]) : 1;
+            month = dateProperties.length > 1 ? Integer.parseInt(dateProperties[1]) : 1;
+            year = Integer.parseInt(dateProperties[2]);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
+
+        try {
             LocalDate.of(year, month, day);
             return true;
-        }catch(DateTimeException dte){
+        } catch (DateTimeException dte) {
             return false;
         }
     }

@@ -32,6 +32,7 @@
   add Valid Name p/12345 e/Valid@email.com dob/32.12.1994
   add Valid Name p/12345 e/Valid@email.com dob/12.13.1994
   add Valid Name p/12345 e/Valid@email.com dob/122.33.1993
+  add Valid Name p/12345 e/Valid@email.com dob/sss.sss.asadas
 
 
   # should add correctly
