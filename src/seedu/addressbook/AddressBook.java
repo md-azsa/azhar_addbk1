@@ -1169,7 +1169,7 @@ public class AddressBook {
      */
     private static boolean isPersonDOBValid(String dob){
 
-        return dob.matches("\\S+\\.\\S+\\.\\S+") && verifyValidDOB(dob); // dob is [non-whitespace].[non-whitespace].[non-whitespace]
+        return dob.matches("\\S+\\.\\S+\\.\\S+") && isDateOfValidDayandMonth(dob); // dob is [non-whitespace].[non-whitespace].[non-whitespace]
     }
 
     /**
@@ -1178,7 +1178,7 @@ public class AddressBook {
      * @param s to be validated
      * @return whether arg is a valid date
      */
-    private static boolean verifyValidDOB(String s) {
+    private static boolean isDateOfValidDayandMonth(String s) {
         String[] dateProperties  = s.split("\\.");
         int day, month, year;
         try {
